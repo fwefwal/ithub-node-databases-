@@ -1,15 +1,13 @@
-process.on("SIGINT", () => {
-  console.log("\nGracefully shutting down");
-  process.exit(0);
-});
+import getDbConnection from "./database/connection"
+import { logFirstFourtyAnswers } from "./database/queries";
+
 
 export function main() {
   try {
-    console.log("🎉 Party time! Your app is ready to rock!\n");
-    console.log("👉 Edit \x1b[38;5;208msrc/index.ts\x1b[0m and watch the magic happen here!");
-    console.log("   Lets build something amazing!\n");
+    const db = getDbConnection()
+    logFirstFourtyAnswers(db)
   } catch (error) {
-    console.error("Failed to start:", error);
+    console.error(error);
     process.exit(1);
   }
 }
