@@ -1,16 +1,14 @@
-import type getDbConnection from './connection'
-import type { QuestionUpdate, Answer, NewAnswer } from './schema'
+import type { Insertable, Selectable, Updateable } from 'kysely'
+import type { DB } from 'kisely-codegen'
 
-type Db = ReturnType<typeof getDbConnection>
-
-export async function findQuestionById(db: Db, id: number) {
+export async function findQuestionById(db: DB, id: number) {
   return await db.selectFrom('Question')
     .where('questionid', '=', id)
     .selectAll()
     .executeTakeFirst()
 }
 
-export async function findAnswer(db: Db, criteria: Partial<Answer>) {
+export async function findAnswer(db: DB, criteria: Partial<Selectable<"Answer">>) {
   let query = db.selectFrom('Answer')
 
   if (criteria.QuestionID) {
@@ -24,11 +22,11 @@ export async function findAnswer(db: Db, criteria: Partial<Answer>) {
   return await query.selectAll().execute()
 }
 
-export async function updateQuestion(db: Db, id: number, updateWith: QuestionUpdate) {
+export async function updateQuestion(db: DB, id: number, updateWith: Updateable<"Question">) {
   await db.updateTable('Question').set(updateWith).where('questionid', '=', id).execute()
 }
 
-export async function createAnswer(db: Db, answer: NewAnswer) {
+export async function createAnswer(db: DB, answer: Insertable<"Answer">) {
   return await db.insertInto('Answer')
     .values(answer)
     .returningAll()

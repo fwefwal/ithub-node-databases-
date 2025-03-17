@@ -1,7 +1,7 @@
 import path from 'node:path'
 import SQLite from 'better-sqlite3'
 import { Kysely, SqliteDialect } from 'kysely'
-import type { Database } from './schema'
+import type { DB } from 'kysely-codegen'
 
 export default function getDbConnection() {
   const dbFile = process.env.DB_FILE
@@ -16,7 +16,7 @@ export default function getDbConnection() {
     database: new SQLite(dbPath),
   })
 
-  return new Kysely<Database>({
+  return new Kysely<DB>({
     dialect,
   })
 }
