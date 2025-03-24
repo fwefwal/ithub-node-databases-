@@ -1,28 +1,21 @@
-import type { Insertable } from "kysely"
-import type getConnection from "./connection"
-import type { DB } from "kysely-codegen"
+import type { PrismaClient } from "@prisma/client"
 
-type Connection = ReturnType<typeof getConnection>
-
-async function logAllQuestions(connection: Connection) {
+async function logAllQuestions(prisma: PrismaClient) {
   try {
-    const result = await connection.selectFrom("Question").selectAll().execute()
-    console.log(result)
+    const questions = await prisma.question.findMany()
+    console.log(questions)
   } catch (error) {
     console.error(error)
   }
 }
 
-async function createSurvey(
-  connection: Connection,
-  newSurvey: Insertable<DB["Survey"]>
-) {
+async function createSurvey(prisma: PrismaClient) {
   try {
-    await connection
-      .insertInto("Survey")
-      .values(newSurvey)
-      .returningAll()
-      .executeTakeFirstOrThrow()
+    await prisma.survey.create({
+      data: {
+        Description: 'Prisma Survey'
+      }
+    })
   } catch (error) {
     console.error(error)
   }
