@@ -1,14 +1,13 @@
-import getDbConnection from "./database/connection"
-import { logFirstFourtyAnswers, logTopFiveCountries } from "./database/queries";
+import getConnection from "./database/connection";
+import { logAllQuestions, createSurvey } from "./database/queries";
 
-
-export function main() {
+export async function main() {
   try {
-    const db = getDbConnection()
-    logFirstFourtyAnswers(db)
-    logTopFiveCountries(db)
+    const connection = getConnection()
+    await logAllQuestions(connection)
+    await createSurvey(connection, { Description: "Insertable Test" })
   } catch (error) {
-    console.error(error);
+    console.error("Failed to start:", error);
     process.exit(1);
   }
 }
