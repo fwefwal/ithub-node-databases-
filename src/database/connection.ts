@@ -1,19 +1,21 @@
-import path from "node:path"
-import sqlite3 from "sqlite3"
+import { join } from 'node:path'
+import sqlite3 from 'better-sqlite3'
+import { Kysely, SqliteDialect } from 'kysely'
+import type { DB } from 'kysely-codegen'
 
-export default function getDbConnection() {
-  /**
-   *  https://github.com/TryGhost/node-sqlite3/wiki/API
-   */
+export default function getConnection() {
+  const dbFile = process.env.DB_FILE
+  if (!dbFile) {
+    throw new Error('Not found DB_FILE env variable')
+  }
+  const dbPath = join(import.meta.dirname, '..', '..', dbFile)
   try {
-    const dbFile = process.env.DB_FILE
-    if (!dbFile) {
-      throw new Error('Couldn\'t find DB_FILE enviroment variable')
-    }
-    const dbPath = path.join(import.meta.dirname, "..", dbFile)
-    return new sqlite3.Database(dbPath)
+    const dialect = new SqliteDialect({
+      database: new sqlite3(dbPath)
+    })
+    return new Kysely<DB>({ dialect })
   } catch (error) {
-    console.log(error)
-    throw error
+    console.error(error)
+    throw new Error('Couldn\'t establish connection with a database')
   }
 }
